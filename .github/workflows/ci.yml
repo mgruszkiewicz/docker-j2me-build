@@ -33,17 +33,17 @@ jobs:
     # Build the Docker image
     - name: Build Docker image
       run: |
-        REPO_OWNER=$(echo "$" | tr '[:upper:]' '[:lower:]')
-        REPO_NAME=$(echo "$" | tr '[:upper:]' '[:lower:]')
-        IMAGE_TAG=$([[ "$" == "push" && "$" =~ ^refs/tags/ ]] && echo "$" || echo "$")
+        REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        REPO_NAME=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+        IMAGE_TAG=$([[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" =~ ^refs/tags/ ]] && echo "${{ github.ref_name }}" || echo "${{ env.SHORT_SHA }}")
         docker build . --file Dockerfile --tag ghcr.io/$REPO_OWNER/$REPO_NAME:${IMAGE_TAG}
         docker tag ghcr.io/$REPO_OWNER/$REPO_NAME:${IMAGE_TAG} ghcr.io/$REPO_OWNER/$REPO_NAME:latest
 
     # Push the Docker image to GitHub Container Registry
     - name: Push Docker image
       run: |
-        REPO_OWNER=$(echo "$" | tr '[:upper:]' '[:lower:]')
-        REPO_NAME=$(echo "$" | tr '[:upper:]' '[:lower:]')
-        IMAGE_TAG=$([[ "$" == "push" && "$" =~ ^refs/tags/ ]] && echo "$" || echo "$")
+        REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        REPO_NAME=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+        IMAGE_TAG=$([[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" =~ ^refs/tags/ ]] && echo "${{ github.ref_name }}" || echo "${{ env.SHORT_SHA }}")
         docker push ghcr.io/$REPO_OWNER/$REPO_NAME:${IMAGE_TAG}
         docker push ghcr.io/$REPO_OWNER/$REPO_NAME:latest
