@@ -2,6 +2,9 @@ name: Build and Push Docker Image
 
 on:
   push:
+    branches:
+      - "main"
+      - "dev"
     tags:
       - "*"
   workflow_dispatch:
@@ -20,9 +23,12 @@ jobs:
       id: vars
       run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-    # Log in to GitHub Docker Registry
-    - name: Log in to GitHub Docker Registry
-      run: echo "$" | docker login ghcr.io -u $ --password-stdin
+    - name: Login to ghcr.io
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ github.token }}
 
     # Build the Docker image
     - name: Build Docker image
